@@ -1,6 +1,5 @@
 -- Main.lua
--- Entry point, loads Loader and ChestFarm
+-- Entry point: auto-loads Loader and ChestFarm from GitHub
 
--- Replace RAW URLs with your GitHub raw links
-loadstring(game:HttpGet("https://raw.githubusercontent.com/blakebivens6-arch/The-chest-farm/refs/heads/main/Loader.lua"))()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/blakebivens6-arch/The-chest-farm/refs/heads/main/ChestFarm.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/blakebivens6-arch/The-chest-farm/main/Loader.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/blakebivens6-arch/The-chest-farm/main/ChestFarm.lua"))()
