@@ -1,17 +1,26 @@
 -- Loader.lua
--- Responsible for loading save data and signaling ChestFarm
+-- Fully auto-execute safe loader for chest farm
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local task = task
 
 local player = Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+
+-- 🔹 Repeated check until the game is fully ready
+repeat
+    task.wait(0.2)
+until player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and Workspace.CurrentCamera and Workspace.CurrentCamera.CFrame
+
+local character = player.Character
 local root = character:WaitForChild("HumanoidRootPart")
+local cam = Workspace.CurrentCamera
+
+-- 🔹 SafeZone
 local safeZone = Workspace:WaitForChild("Map"):WaitForChild("PrairieVillage"):WaitForChild("Statue")
 
--- Communication event for ChestFarm
+-- 🔹 Communication event for ChestFarm
 local chestFarmSignal = ReplicatedStorage:FindFirstChild("ChestFarmSignal")
 if not chestFarmSignal then
     chestFarmSignal = Instance.new("BindableEvent")
@@ -19,7 +28,7 @@ if not chestFarmSignal then
     chestFarmSignal.Parent = ReplicatedStorage
 end
 
--- Helper to find a part to teleport to
+-- 🔹 Helper to get any BasePart from a model or part
 local function getAnyPart(obj)
     if not obj then return nil end
     if obj:IsA("BasePart") then return obj end
@@ -44,7 +53,7 @@ local function teleportToSafeZone()
     instantTP(safeZone)
 end
 
--- Load save data
+-- 🔹 Load save data (run twice, 5s interval)
 local function loadSaveData()
     local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("LoadData")
     local args = {[1]=2}
@@ -56,9 +65,9 @@ local function loadSaveData()
     end
 end
 
--- Wait for game load signal
+-- 🔹 Wait for game load signal (Settings or Block remote fired)
 local function waitForGameLoadSignal()
-    print("Loader: Waiting for Settings or Block remote...")
+    print("Loader: Waiting for Settings or Block remote to signal game load...")
     while true do
         local success = false
 
@@ -87,6 +96,6 @@ local function waitForGameLoadSignal()
     chestFarmSignal:Fire()
 end
 
--- Start loader
+-- 🔹 Start loader
 loadSaveData()
 waitForGameLoadSignal()
