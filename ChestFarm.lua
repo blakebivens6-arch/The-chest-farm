@@ -139,5 +139,5 @@ local function startChestLoop()
     end
 end
 
--- 🔹 Start farming after LoaderReady
+-- 🔹 Start farming
 startChestLoop()
