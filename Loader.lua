@@ -1,5 +1,5 @@
 -- Loader.lua
--- Fully auto-execute safe loader for chest farm
+-- Fully auto-execute safe loader with persistent LoaderReady flag
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -20,12 +20,13 @@ local cam = Workspace.CurrentCamera
 -- 🔹 SafeZone
 local safeZone = Workspace:WaitForChild("Map"):WaitForChild("PrairieVillage"):WaitForChild("Statue")
 
--- 🔹 Communication event for ChestFarm
-local chestFarmSignal = ReplicatedStorage:FindFirstChild("ChestFarmSignal")
-if not chestFarmSignal then
-    chestFarmSignal = Instance.new("BindableEvent")
-    chestFarmSignal.Name = "ChestFarmSignal"
-    chestFarmSignal.Parent = ReplicatedStorage
+-- 🔹 Persistent flag for ChestFarm
+local loaderFlag = ReplicatedStorage:FindFirstChild("LoaderReady")
+if not loaderFlag then
+    loaderFlag = Instance.new("BoolValue")
+    loaderFlag.Name = "LoaderReady"
+    loaderFlag.Value = false
+    loaderFlag.Parent = ReplicatedStorage
 end
 
 -- 🔹 Helper to get any BasePart from a model or part
@@ -92,8 +93,8 @@ local function waitForGameLoadSignal()
     task.wait(10)
 
     teleportToSafeZone()
-    print("Loader: Signaling ChestFarm to start...")
-    chestFarmSignal:Fire()
+    print("Loader: Setting LoaderReady flag to true.")
+    loaderFlag.Value = true
 end
 
 -- 🔹 Start loader
