@@ -1,5 +1,5 @@
 -- ChestFarm.lua
--- Responsible for chest farming after Loader signal
+-- Fully auto-execute safe chest farm that waits for LoaderReady flag
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -13,15 +13,17 @@ local character = player.Character or player.CharacterAdded:Wait()
 local root = character:WaitForChild("HumanoidRootPart")
 local safeZone = Workspace:WaitForChild("Map"):WaitForChild("PrairieVillage"):WaitForChild("Statue")
 
--- Communication event from Loader
-local chestFarmSignal = ReplicatedStorage:WaitForChild("ChestFarmSignal")
-
--- Settings
+-- 🔹 Settings
 local SAFEZONE_WAIT = 5
 local SCAN_INTERVAL = 0.5
 local MAX_CHEST_RUNS = 10
 
--- Helper functions
+-- 🔹 Wait for LoaderReady flag
+local loaderFlag = ReplicatedStorage:WaitForChild("LoaderReady")
+repeat task.wait(0.2) until loaderFlag.Value
+print("ChestFarm: LoaderReady detected, starting chest farm...")
+
+-- 🔹 Helper functions
 local function getAnyPart(obj)
     if not obj then return nil end
     if obj:IsA("BasePart") then return obj end
@@ -137,8 +139,5 @@ local function startChestLoop()
     end
 end
 
--- Wait for loader signal
-chestFarmSignal.Event:Connect(function()
-    print("ChestFarm: Received loaded signal, starting chest farm...")
-    startChestLoop()
-end)
+-- 🔹 Start farming after LoaderReady
+startChestLoop()
